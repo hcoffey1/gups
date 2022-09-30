@@ -40,6 +40,8 @@ u64Int HPCC_starts(s64Int n);
 
 int main(int narg, char **arg)
 {
+
+  #pragma begin_instrument 1 
   int me,nprocs;
   int i,j,iterate,niterate;
   int nlocal,nlocalm1,logtable,index,logtablelocal;
@@ -213,6 +215,8 @@ int main(int narg, char **arg)
   free(data);
   free(send);
   MPI_Finalize();
+
+  #pragma end_instrument 1
 }
 
 /* start random number generator at Nth step of stream
