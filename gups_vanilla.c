@@ -14,6 +14,10 @@
 #include <stdlib.h>
 #include <mpich/mpi.h>
 
+#if defined(GEM5_BUILD) || defined(GEM5_ZRAY_BUILD)
+#include "gem5/m5ops.h"
+#endif
+
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 
 /* machine defs
@@ -40,8 +44,17 @@ u64Int HPCC_starts(s64Int n);
 
 int main(int narg, char **arg)
 {
+#ifdef GEM5_BUILD
+    printf("dumping stats\n");
+    m5_dump_reset_stats(0,0);
+#elif GEM5_ZRAY_BUILD
+    printf("dumping stats\n");
+    m5_dump_reset_stats(0,0);
+#pragma begin_instrument 15
+#else
+#pragma begin_instrument 15
+#endif
 
-  #pragma begin_instrument 1 
   int me,nprocs;
   int i,j,iterate,niterate;
   int nlocal,nlocalm1,logtable,index,logtablelocal;
@@ -216,7 +229,14 @@ int main(int narg, char **arg)
   free(send);
   MPI_Finalize();
 
-  #pragma end_instrument 1
+#ifdef GEM5_BUILD 
+    m5_dump_reset_stats(0,0);
+#elif GEM5_ZRAY_BUILD
+#pragma end_instrument 15
+    m5_dump_reset_stats(0,0);
+#else
+#pragma end_instrument 15
+#endif
 }
 
 /* start random number generator at Nth step of stream
